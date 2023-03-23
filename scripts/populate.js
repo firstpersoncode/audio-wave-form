@@ -2,11 +2,11 @@ const connectClient = require("../prisma/client");
 
 async function main() {
   connectClient(async (db) => {
+    await db.anomaly.deleteMany({});
     await db.machine.deleteMany({});
     await db.status.deleteMany({});
     await db.reason.deleteMany({});
     await db.action.deleteMany({});
-    await db.anomaly.deleteMany({});
 
     const machines = [
       {
