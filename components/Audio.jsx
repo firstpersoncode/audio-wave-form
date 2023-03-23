@@ -9,12 +9,14 @@ import VolumeOff from "@mui/icons-material/VolumeOff";
 import Stack from "@mui/material/Stack";
 import Slider from "@mui/material/Slider";
 import colormap from "colormap";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function Audio({ audio }) {
   const waveformRef = useRef(null);
   const waveSpectrogramRef = useRef(null);
   const wavesurfer = useRef(null);
   const [ready, setReady] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [play, setPlay] = useState(false);
   const [mute, setMute] = useState(false);
   const [volume, setVolume] = useState(0);
@@ -28,7 +30,9 @@ export default function Audio({ audio }) {
   useLayoutEffect(() => {
     if (!ready) return;
 
+    setLoaded(false);
     setPlay(false);
+
     const create = async () => {
       const WaveSurfer = (await import("wavesurfer.js")).default;
       const SpectrogramPlugin = (
@@ -57,6 +61,7 @@ export default function Audio({ audio }) {
       });
 
       wavesurfer.current.on("ready", function () {
+        setLoaded(true);
         wavesurfer.current.setVolume(0.5);
         setMute(false);
         setVolume(50);
@@ -99,35 +104,58 @@ export default function Audio({ audio }) {
   }
 
   return (
-    <>
+    <Box sx={{ position: "relative" }}>
       <Typography sx={{ mb: 2, color: "#5F6368" }} variant="h5">
         Anomaly Machine Output
       </Typography>
-      <Box
-        sx={{
-          display: "inline-flex",
-          gap: 2,
-          alignItems: "center",
-          backgroundColor: "#ddd",
-          p: 1,
-          borderRadius: 10,
-        }}
-      >
-        <IconButton onClick={handlePlayPause}>
-          {!play ? <PlayArrow /> : <Pause />}
-        </IconButton>
-        <Typography variant="body2">
-          {formatTime(time)} / {formatTime(duration)}
-        </Typography>
-        <Slider sx={{ width: 100 }} value={volume} onChange={onVolumeChange} />
-        <IconButton onClick={handleMute}>
-          {!mute ? <VolumeUp /> : <VolumeOff />}
-        </IconButton>
-      </Box>
+      {loaded && (
+        <Box
+          sx={{
+            display: "inline-flex",
+            gap: 2,
+            alignItems: "center",
+            backgroundColor: "#ddd",
+            p: 1,
+            borderRadius: 10,
+          }}
+        >
+          <IconButton onClick={handlePlayPause}>
+            {!play ? <PlayArrow /> : <Pause />}
+          </IconButton>
+          <Typography variant="body2">
+            {formatTime(time)} / {formatTime(duration)}
+          </Typography>
+          <Slider
+            sx={{ width: 100 }}
+            value={volume}
+            onChange={onVolumeChange}
+          />
+          <IconButton onClick={handleMute}>
+            {!mute ? <VolumeUp /> : <VolumeOff />}
+          </IconButton>
+        </Box>
+      )}
 
       <Box sx={{ my: 2 }} id="waveform" ref={waveformRef} />
       <Box sx={{ my: 2 }} id="wave-spectrogram" ref={waveSpectrogramRef} />
-    </>
+
+      {!loaded && (
+        <Box
+          sx={{
+            position: "absolute",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
+    </Box>
   );
 }
 
