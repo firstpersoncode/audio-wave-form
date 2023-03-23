@@ -36,6 +36,14 @@ export default async function getAnomalies(db, where) {
         },
       },
     },
+    orderBy: [
+      {
+        fetchedAt: "asc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ],
   });
 
   return data.map((a) => ({
