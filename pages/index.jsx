@@ -11,7 +11,7 @@ export default function Home({ dashboard }) {
   );
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const dashboard = await connectClient(getDashboard);
   return { props: { dashboard } };
 }
