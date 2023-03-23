@@ -9,15 +9,7 @@ import Anomalies from "./Anomalies";
 import Anomaly from "./Anomaly";
 
 export default function Dashboard() {
-  const {
-    machines,
-    machine,
-    anomalies,
-    anomaly,
-    reasons,
-    actions,
-    selectMachine,
-  } = useDashboardContext();
+  const { machines, machine, selectMachine } = useDashboardContext();
 
   const [loading, setLoading] = useState(false);
 
