@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Anomaly {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime  @default(now())
+  fetchedAt     DateTime?
+  
+  machine       Machine   @relation(fields: [machineId], references: [id])
+  machineId     String    @db.ObjectId
+  
+  status        Status    @relation(fields: [statusId], references: [id])
+  statusId      String    @db.ObjectId
+
+  reason        Reason?   @relation(fields: [reasonId], references: [id])
+  reasonId      String?   @db.ObjectId
+
+  action        Action?   @relation(fields: [actionId], references: [id])
+  actionId      String?   @db.ObjectId
+
+  sensor        String
+  clip          String
+
+  comments      String?
+
+  @@map("anomalies")
+}
+
+model Machine {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime @default(now())
+  name          String   @unique
+  label         String
+
+  anomalies     Anomaly[]
+  reasons       Reason[]
+
+  @@map("machines")
+}
+
+model Status {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime @default(now())
+  name          String   @unique
+  label         String
+
+  anomalies     Anomaly[]
+
+  @@map("statuses")
+}
+
+
+model Reason {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime @default(now())
+  name          String   @unique
+  label         String
+
+  anomalies     Anomaly[]
+
+  machine       Machine?   @relation(fields: [machineId], references: [id])
+  machineId     String?    @db.ObjectId
+
+  @@map("reasons")
+}
+
+
+model Action {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime @default(now())
+  name          String   @unique
+  label         String
+
+  anomalies     Anomaly[]
+
+  @@map("actions")
+}
